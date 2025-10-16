@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:sqflite/sqflite.dart';
@@ -7,7 +8,7 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 class ApiService {
-  final String baseUrl = "http://YOUR-SERVER-IP:3000"; // Replace with your backend API address
+  final String baseUrl = "http://10.0.2.2:3000/api"; // Replace with your backend API address
 
   Future<bool> markAttendance(String studentId) async {
     try {

@@ -1,20 +1,9 @@
-import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-class AttendanceApi {
-  final String baseUrl = 'http://YOUR-SERVER-IP:3000'; // Update with your server
-
-  Future<List<dynamic>> fetchAttendanceRecords() async {
-    final response = await http.get(Uri.parse('$baseUrl/attendance'));
-
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to fetch attendance records');
-    }
-  }
-}
+import 'package:gurukul_manager/notice_service.dart';
+import 'package:gurukul_manager/practical_service.dart';
+import 'package:gurukul_manager/subject_service.dart';
+import 'package:gurukul_manager/timetable_service.dart';
 
 class AttendanceDashboard extends StatefulWidget {
   const AttendanceDashboard({Key? key}) : super(key: key);
@@ -24,47 +13,468 @@ class AttendanceDashboard extends StatefulWidget {
 }
 
 class _AttendanceDashboardState extends State<AttendanceDashboard> {
-  late Future<List<dynamic>> _attendanceFuture;
+  int _selectedIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _attendanceFuture = AttendanceApi().fetchAttendanceRecords();
+  static const List<Widget> _widgetOptions = <Widget>[
+    HomeScreen(),
+    PlaceholderWidget(text: 'Months'),
+    SubjectsScreen(),
+    TimetableScreen(),
+    NoticeScreen(),
+    PracticalScreen(),
+    PlaceholderWidget(text: 'Attendance'),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Attendance Dashboard')),
-      body: FutureBuilder<List<dynamic>>(
-        future: _attendanceFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No attendance records found.'));
-          }
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'Months',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'Subjects',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.schedule),
+            label: 'Timetable',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.holiday_village),
+            label: 'Notice',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.science),
+            label: 'Practical',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.analytics),
+            label: 'Attendance',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Colors.grey,
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
 
-          final records = snapshot.data!;
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
-          return ListView.separated(
-            itemCount: records.length,
-            separatorBuilder: (_, __) => const Divider(),
-            itemBuilder: (context, index) {
-              final record = records[index];
-              String studentId = record['studentid'] ?? 'Unknown';
-              String timestamp = record['timestamp'] ?? 'Unknown';
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Dashboard'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 1,
+      ),
+      body: Container(
+        color: Colors.grey[100],
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Months and Subjects
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildDashboardCard(
+                      context,
+                      title: 'Months',
+                      icon: Icons.calendar_today,
+                      onTap: () {},
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildDashboardCard(
+                      context,
+                      title: 'Subjects',
+                      icon: Icons.book,
+                      onTap: () {
+                        // This will be handled by the BottomNavigationBar
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
 
-              return ListTile(
-                leading: const Icon(Icons.person),
-                title: Text('Student ID: $studentId'),
-                subtitle: Text('Marked at: $timestamp'),
-              );
-            },
+              // Timetable
+              _buildTitledCard(
+                context,
+                title: 'Timetable',
+                child: Column(
+                  children: [
+                    _buildTextButton(
+                      context,
+                      label: "View Today's Schedule",
+                      onPressed: () {},
+                    ),
+                    const Divider(),
+                    _buildTextButton(
+                      context,
+                      label: 'Generate New Day Timetable (AI)',
+                      onPressed: () {},
+                    ),
+                    const Divider(),
+                    _buildTextButton(
+                      context,
+                      label: 'Get Full Timetable',
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Notice of Holidays
+              _buildTitledCard(
+                context,
+                title: 'Notice of Holidays',
+                child: const ListTile(
+                  leading: Icon(Icons.holiday_village_outlined),
+                  title: Text('No upcoming holidays.'),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Practical Timetable
+              _buildTitledCard(
+                context,
+                title: 'Practical (Timetable)',
+                child: const ListTile(
+                  leading: Icon(Icons.science_outlined),
+                  title: Text('View practical schedules.'),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Attendance
+              _buildTitledCard(
+                context,
+                title: 'Final Attendance',
+                child: Column(
+                  children: [
+                    const ListTile(
+                      title: Text('View your final attendance.'),
+                    ),
+                    const Divider(),
+                    ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.analytics_outlined),
+                      label: const Text('Alpha Attendance Analytics'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDashboardCard(BuildContext context,
+      {required String title, required IconData icon, VoidCallback? onTap}) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 40, color: Theme.of(context).primaryColor),
+              const SizedBox(height: 8),
+              Text(title, style: Theme.of(context).textTheme.titleMedium),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTitledCard(BuildContext context,
+      {required String title, required Widget child}) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            child,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextButton(BuildContext context,
+      {required String label, VoidCallback? onPressed}) {
+    return TextButton(
+      onPressed: onPressed,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label),
+          const Icon(Icons.arrow_forward_ios, size: 16),
+        ],
+      ),
+    );
+  }
+}
+
+class SubjectsScreen extends StatefulWidget {
+  const SubjectsScreen({Key? key}) : super(key: key);
+
+  @override
+  _SubjectsScreenState createState() => _SubjectsScreenState();
+}
+
+class _SubjectsScreenState extends State<SubjectsScreen> {
+  final SubjectService _subjectService = SubjectService();
+  List<String> _subjects = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSubjects();
+  }
+
+  void _loadSubjects() async {
+    List<String> subjects = await _subjectService.getSubjects();
+    setState(() {
+      _subjects = subjects;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Subjects'),
+      ),
+      body: ListView.builder(
+        itemCount: _subjects.length,
+        itemBuilder: (context, index) {
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ListTile(
+              title: Text(_subjects[index]),
+              subtitle: const Text('View assignments'),
+              trailing: const Icon(Icons.arrow_forward),
+              onTap: () {
+                // Handle subject tap
+              },
+            ),
           );
         },
+      ),
+    );
+  }
+}
+
+class TimetableScreen extends StatefulWidget {
+  const TimetableScreen({Key? key}) : super(key: key);
+
+  @override
+  _TimetableScreenState createState() => _TimetableScreenState();
+}
+
+class _TimetableScreenState extends State<TimetableScreen> {
+  final TimetableService _timetableService = TimetableService();
+  List<Map<String, dynamic>> _timetable = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTimetable();
+  }
+
+  void _loadTimetable() async {
+    List<Map<String, dynamic>> timetable =
+        await _timetableService.getTimetable();
+    setState(() {
+      _timetable = timetable;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Timetable'),
+      ),
+      body: ListView.builder(
+        itemCount: _timetable.length,
+        itemBuilder: (context, index) {
+          var entry = _timetable[index];
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ListTile(
+              title: Text(entry['subject'] ?? ''),
+              subtitle: Text(
+                  '${entry['day']} - ${entry['startTime']} to ${entry['endTime']}'),
+              trailing: Text(entry['teacher'] ?? ''),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class NoticeScreen extends StatefulWidget {
+  const NoticeScreen({Key? key}) : super(key: key);
+
+  @override
+  _NoticeScreenState createState() => _NoticeScreenState();
+}
+
+class _NoticeScreenState extends State<NoticeScreen> {
+  final NoticeService _noticeService = NoticeService();
+  List<Map<String, dynamic>> _notices = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNotices();
+  }
+
+  void _loadNotices() async {
+    List<Map<String, dynamic>> notices = await _noticeService.getNotices();
+    setState(() {
+      _notices = notices;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Notices'),
+      ),
+      body: ListView.builder(
+        itemCount: _notices.length,
+        itemBuilder: (context, index) {
+          var notice = _notices[index];
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ListTile(
+              title: Text(notice['title'] ?? ''),
+              subtitle: Text(notice['message'] ?? ''),
+              trailing: Text(notice['date'] ?? ''),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class PracticalScreen extends StatefulWidget {
+  const PracticalScreen({Key? key}) : super(key: key);
+
+  @override
+  _PracticalScreenState createState() => _PracticalScreenState();
+}
+
+class _PracticalScreenState extends State<PracticalScreen> {
+  final PracticalService _practicalService = PracticalService();
+  List<Map<String, dynamic>> _practicals = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPracticals();
+  }
+
+  void _loadPracticals() async {
+    List<Map<String, dynamic>> practicals =
+        await _practicalService.getPracticals();
+    setState(() {
+      _practicals = practicals;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Practicals'),
+      ),
+      body: ListView.builder(
+        itemCount: _practicals.length,
+        itemBuilder: (context, index) {
+          var practical = _practicals[index];
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ListTile(
+              title: Text(practical['title'] ?? ''),
+              subtitle: Text(practical['description'] ?? ''),
+              trailing: Text(practical['date'] ?? ''),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class PlaceholderWidget extends StatelessWidget {
+  final String text;
+
+  const PlaceholderWidget({Key? key, required this.text}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(text),
+      ),
+      body: Center(
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 24),
+        ),
       ),
     );
   }

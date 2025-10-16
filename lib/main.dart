@@ -1,22 +1,9 @@
+
 import 'package:flutter/material.dart';
+import 'package:gurukul_manager/login_page.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
-      body: const Center(
-        child: Text('Login Page'),
-      ),
-    );
-  }
 void main() {
   runApp(const AttendanceApp());
-}
 }
 
 class AttendanceApp extends StatelessWidget {
@@ -24,9 +11,19 @@ class AttendanceApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Attendance App',
-      home: LoginPage(), // start from login page
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        cardTheme: CardThemeData(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+      home: const LoginPage(),
     );
   }
 }

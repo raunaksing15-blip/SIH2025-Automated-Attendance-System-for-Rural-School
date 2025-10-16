@@ -1,99 +1,68 @@
-import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'qr_scanner_page.dart';
+import 'package:gurukul_manager/attendance_dashboard.dart';
+import 'package:gurukul_manager/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  bool isLoading = false;
+  final AuthService _authService = AuthService();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> login() async {
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
+  void _login() async {
+    bool success = await _authService.login(
+      _emailController.text,
+      _passwordController.text,
+    );
 
-    if (email.isEmpty || password.isEmpty) {
+    if (success) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const AttendanceDashboard()),
+      );
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter email and password")),
+        const SnackBar(content: Text('Login failed')),
       );
-      return;
-    }
-
-    setState(() {
-      isLoading = true;
-    });
-
-    // 🔹 Replace this with your backend API URL later
-    const String apiUrl = "http://10.0.2.2:3000/login";
-
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "email": email,
-          "password": password,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        Navigator.push(
-  context,
-  MaterialPageRoute(builder: (context) => const QRScannerPage()),
-);
-        final data = jsonDecode(response.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Login success: ${data['message']}")),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Login failed: ${response.body}")),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: "Email"),
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+              ),
             ),
             const SizedBox(height: 16),
             TextField(
-              controller: passwordController,
+              controller: _passwordController,
+              decoration: const InputDecoration(
+                labelText: 'Password',
+              ),
               obscureText: true,
-              decoration: const InputDecoration(labelText: "Password"),
             ),
             const SizedBox(height: 24),
-            isLoading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: login,
-                    child: const Text("Login"),
-                  ),
+            ElevatedButton(
+              onPressed: _login,
+              child: const Text('Login'),
+            ),
           ],
         ),
       ),
