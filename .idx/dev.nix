@@ -3,6 +3,11 @@
   packages = [
     pkgs.jdk17
     pkgs.unzip
+    pkgs.python3
+    pkgs.python312Packages.sflask
+    pkgs.python312Packages.flask-cors
+    pkgs.python312Packages.firebase-admin
+    pkgs.python312Packages.python-dotenv
   ];
   idx.extensions = [
     

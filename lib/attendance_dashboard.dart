@@ -6,7 +6,7 @@ import 'package:gurukul_manager/subject_service.dart';
 import 'package:gurukul_manager/timetable_service.dart';
 
 class AttendanceDashboard extends StatefulWidget {
-  const AttendanceDashboard({Key? key}) : super(key: key);
+  const AttendanceDashboard({super.key});
 
   @override
   _AttendanceDashboardState createState() => _AttendanceDashboardState();
@@ -78,7 +78,7 @@ class _AttendanceDashboardState extends State<AttendanceDashboard> {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -263,7 +263,7 @@ class HomeScreen extends StatelessWidget {
 }
 
 class SubjectsScreen extends StatefulWidget {
-  const SubjectsScreen({Key? key}) : super(key: key);
+  const SubjectsScreen({super.key});
 
   @override
   _SubjectsScreenState createState() => _SubjectsScreenState();
@@ -313,7 +313,7 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
 }
 
 class TimetableScreen extends StatefulWidget {
-  const TimetableScreen({Key? key}) : super(key: key);
+  const TimetableScreen({super.key});
 
   @override
   _TimetableScreenState createState() => _TimetableScreenState();
@@ -363,7 +363,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
 }
 
 class NoticeScreen extends StatefulWidget {
-  const NoticeScreen({Key? key}) : super(key: key);
+  const NoticeScreen({super.key});
 
   @override
   _NoticeScreenState createState() => _NoticeScreenState();
@@ -411,7 +411,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
 }
 
 class PracticalScreen extends StatefulWidget {
-  const PracticalScreen({Key? key}) : super(key: key);
+  const PracticalScreen({super.key});
 
   @override
   _PracticalScreenState createState() => _PracticalScreenState();
@@ -462,7 +462,7 @@ class _PracticalScreenState extends State<PracticalScreen> {
 class PlaceholderWidget extends StatelessWidget {
   final String text;
 
-  const PlaceholderWidget({Key? key, required this.text}) : super(key: key);
+  const PlaceholderWidget({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {
