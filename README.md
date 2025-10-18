@@ -1,6 +1,22 @@
-# Gurukul Manager - Automated Attendance System
+# Gurukul Manager: SIH2025 Automated Attendance System for Rural Schools
 
-This is a Flutter-based mobile application for an automated attendance system. The system uses QR codes to mark student attendance and stores the data in a Firebase backend. This project includes both the Flutter frontend and a Flask backend.
+## Overview
+
+Gurukul Manager is a Smart India Hackathon 2025 project designed to automate student attendance in rural schools. The solution aims to simplify daily attendance recording, reduce manual errors, and improve student tracking by leveraging technology to enhance school management and promote digital literacy.
+
+## Problem
+
+Many rural schools in India rely on manual attendance processes, which are often time-consuming and prone to error. This not only reduces effective teaching time but also affects government reporting for initiatives like mid-day meals and resource allocation.
+
+## Solution
+
+Gurukul Manager provides:
+- **Mobile app for attendance recording (Flutter)**
+- **Automated attendance capture using QR codes and future facial recognition**
+- **Offline-first design with automatic sync when internet is available**
+- **Centralized dashboard for teachers and administrators**
+- **SMS notifications for absentees**
+- **Reports export for administrators**
 
 ## Features
 
@@ -14,10 +30,9 @@ This is a Flutter-based mobile application for an automated attendance system. T
 | Login Screen                                       | QR Scanner                                       | Attendance History                                   |
 | -------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------- |
 | ![Login Screen](screenshots/login_screen.png)      | ![QR Scanner](screenshots/qr_scanner.png)        | ![Attendance History](screenshots/attendance_history.png) |
+| ![App Screenshot](screenshot1.png)                 | ![Dashboard Screenshot](dashboard.png)           |
 
-## Getting Started
-
-This project contains both the Flutter frontend and the Flask backend. Follow the steps below to set up and run the project.
+## Setup Instructions
 
 ### Prerequisites
 
@@ -30,8 +45,8 @@ This project contains both the Flutter frontend and the Flask backend. Follow th
 1.  **Clone the repository:**
 
     ```bash
-    git clone https://github.com/your-username/gurukul-manager.git
-    cd gurukul-manager
+    git clone https://github.com/raunaksing15-blip/SIH2025-Automated-Attendance-System-for-Rural-School.git
+    cd SIH2025-Automated-Attendance-System-for-Rural-School
     ```
 
 2.  **Install Flutter dependencies:**
@@ -94,3 +109,23 @@ This project contains both the Flutter frontend and the Flask backend. Follow th
     *   Retrieves attendance records for a student.
     *   **Query Parameters:** `student_id=<student_id>`
     *   **Response:** `{"success": true, "attendance": [...]}`
+
+## Tech Stack
+
+- Flutter (Dart)
+- Python Flask (backend)
+- Firebase (database, auth)
+- C++, CMake, Swift (supporting components)
+
+## Contributors
+
+- Raunak Singh (Team Lead)
+- Team Gurukul Manager, SIH2025
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+*For Smart India Hackathon 2025 Submission*
