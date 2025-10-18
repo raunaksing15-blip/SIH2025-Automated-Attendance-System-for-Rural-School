@@ -1,8 +1,19 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 class ApiService {
   final String _baseUrl = 'http://127.0.0.1:8080'; // Replace with your backend URL
+
+  Future<Uint8List> getQrCode(String courseId) async {
+    final response = await http.get(Uri.parse('$_baseUrl/generate_qr?course_id=$courseId'));
+
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    } else {
+      throw Exception('Failed to get QR code');
+    }
+  }
 
   Future<Map<String, dynamic>> markAttendance(String studentId, String courseId) async {
     final response = await http.post(
