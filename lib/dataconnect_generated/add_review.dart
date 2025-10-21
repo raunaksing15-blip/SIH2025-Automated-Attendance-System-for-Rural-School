@@ -1,5 +1,39 @@
 part of 'example.dart';
 
+import 'package:meta/meta.dart';
+
+typedef Deserializer<T> = T Function(dynamic);
+typedef Serializer<T> = String Function(T);
+
+class FirebaseDataConnect {
+  MutationRef<TData, TVars> mutation<TData, TVars>(
+    String name,
+    Deserializer<TData> dataDeserializer,
+    Serializer<TVars> varsSerializer,
+    TVars vars,
+  ) {
+    // Placeholder implementation; replace with real network/mutation logic.
+    return MutationRef<TData, TVars>(() async {
+      return OperationResult<TData, TVars>(data: null, vars: vars);
+    });
+  }
+}
+
+class OperationResult<TData, TVars> {
+  final TData? data;
+  final TVars? vars;
+  OperationResult({this.data, this.vars});
+}
+
+class MutationRef<TData, TVars> {
+  final Future<OperationResult<TData, TVars>> Function() _execute;
+  MutationRef(this._execute);
+  Future<OperationResult<TData, TVars>> execute() => _execute();
+}
+
+T nativeFromJson<T>(dynamic value) => value as T;
+dynamic nativeToJson<T>(T value) => value;
+
 class AddReviewVariablesBuilder {
   String movieId;
   int rating;
@@ -7,7 +41,7 @@ class AddReviewVariablesBuilder {
 
   final FirebaseDataConnect _dataConnect;
   AddReviewVariablesBuilder(this._dataConnect, {required  this.movieId,required  this.rating,required  this.reviewText,});
-  Deserializer<AddReviewData> dataDeserializer = (dynamic json)  => AddReviewData.fromJson(jsonDecode(json));
+  Deserializer<AddReviewData> dataDeserializer = (dynamic json)  => AddReviewData.fromJson(json);
   Serializer<AddReviewVariables> varsSerializer = (AddReviewVariables vars) => jsonEncode(vars.toJson());
   Future<OperationResult<AddReviewData, AddReviewVariables>> execute() {
     return ref().execute();
@@ -23,34 +57,28 @@ class AddReviewVariablesBuilder {
 class AddReviewReviewUpsert {
   final String userId;
   final String movieId;
-  AddReviewReviewUpsert.fromJson(dynamic json):
-  
-  userId = nativeFromJson<String>(json['userId']),
-  movieId = nativeFromJson<String>(json['movieId']);
-  @override
-  bool operator ==(Object other) {
-    if(identical(this, other)) {
-      return true;
-    }
-    if(other.runtimeType != runtimeType) {
-      return false;
-    }
 
-    final AddReviewReviewUpsert otherTyped = other as AddReviewReviewUpsert;
-    return userId == otherTyped.userId && 
-    movieId == otherTyped.movieId;
-    
-  }
-  @override
-  int get hashCode => Object.hash(userId.hashCode, movieId.hashCode);
-  
+  AddReviewReviewUpsert.fromJson(dynamic json)
+    : userId = nativeFromJson<String>(json['userId']),
+      movieId = nativeFromJson<String>(json['movieId']);
 
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> json = {};
-    json['userId'] = nativeToJson<String>(userId);
-    json['movieId'] = nativeToJson<String>(movieId);
-    return json;
+    return {
+      'userId': nativeToJson<String>(userId),
+      'movieId': nativeToJson<String>(movieId),
+    };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    final AddReviewReviewUpsert otherTyped = other as AddReviewReviewUpsert;
+    return userId == otherTyped.userId && movieId == otherTyped.movieId;
+  }
+
+  @override
+  int get hashCode => Object.hash(userId.hashCode, movieId.hashCode);
 
   const AddReviewReviewUpsert({
     required this.userId,
@@ -60,35 +88,30 @@ class AddReviewReviewUpsert {
 
 @immutable
 class AddReviewData {
-  final AddReviewReviewUpsert review_upsert;
-  AddReviewData.fromJson(dynamic json):
-  
-  review_upsert = AddReviewReviewUpsert.fromJson(json['review_upsert']);
+  final AddReviewReviewUpsert reviewUpsert;
+
+  AddReviewData.fromJson(dynamic json)
+    : reviewUpsert = AddReviewReviewUpsert.fromJson(json['review_upsert']);
+
   @override
   bool operator ==(Object other) {
-    if(identical(this, other)) {
-      return true;
-    }
-    if(other.runtimeType != runtimeType) {
-      return false;
-    }
-
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
     final AddReviewData otherTyped = other as AddReviewData;
-    return review_upsert == otherTyped.review_upsert;
-    
+    return reviewUpsert == otherTyped.reviewUpsert;
   }
+
   @override
-  int get hashCode => review_upsert.hashCode;
-  
+  int get hashCode => reviewUpsert.hashCode;
 
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> json = {};
-    json['review_upsert'] = review_upsert.toJson();
-    return json;
+    return {
+      'review_upsert': reviewUpsert.toJson(),
+    };
   }
 
   const AddReviewData({
-    required this.review_upsert,
+    required this.reviewUpsert,
   });
 }
 
