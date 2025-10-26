@@ -4,6 +4,7 @@ import 'package:gurukul_manager/notice_service.dart';
 import 'package:gurukul_manager/practical_service.dart';
 import 'package:gurukul_manager/subject_service.dart';
 import 'package:gurukul_manager/timetable_service.dart';
+import 'package:gurukul_manager/attendance_service.dart';
 
 class AttendanceDashboard extends StatefulWidget {
   const AttendanceDashboard({super.key});
@@ -22,7 +23,7 @@ class _AttendanceDashboardState extends State<AttendanceDashboard> {
     TimetableScreen(),
     NoticeScreen(),
     PracticalScreen(),
-    PlaceholderWidget(text: 'Attendance'),
+    AttendanceScreen(), // Replaced placeholder
   ];
 
   void _onItemTapped(int index) {
@@ -73,6 +74,79 @@ class _AttendanceDashboardState extends State<AttendanceDashboard> {
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
+    );
+  }
+}
+
+class AttendanceScreen extends StatefulWidget {
+  const AttendanceScreen({super.key});
+
+  @override
+  _AttendanceScreenState createState() => _AttendanceScreenState();
+}
+
+class _AttendanceScreenState extends State<AttendanceScreen> {
+  final AttendanceManager _attendanceManager = AttendanceManager();
+  List<Map<String, dynamic>> _attendanceRecords = [];
+  bool _isLoading = true;
+  // In a real app, this would come from your auth service
+  final String _studentId = "STUDENT123";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAttendance();
+  }
+
+  Future<void> _loadAttendance() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var records = await _attendanceManager.getAttendance(_studentId);
+    setState(() {
+      _attendanceRecords = records;
+      _isLoading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Attendance Records'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadAttendance,
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _attendanceRecords.isEmpty
+              ? const Center(child: Text('No attendance records found.'))
+              : ListView.builder(
+                  itemCount: _attendanceRecords.length,
+                  itemBuilder: (context, index) {
+                    var record = _attendanceRecords[index];
+                    var timestamp = record['timestamp']?['_seconds'];
+                    var date = timestamp != null
+                        ? DateTime.fromMillisecondsSinceEpoch(timestamp * 1000)
+                        : null;
+
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                      child: ListTile(
+                        title: Text('Course: ${record['course_id']}'),
+                        subtitle: Text(
+                            'Date: ${date?.toLocal().toString() ?? 'N/A'}'),
+                      ),
+                    );
+                  },
+                ),
     );
   }
 }
