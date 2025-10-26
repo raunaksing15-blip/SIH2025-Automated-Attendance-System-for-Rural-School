@@ -1,17 +1,33 @@
-part of 'example.dart';
+import 'dart:convert';
+import 'package:meta/meta.dart';
+
+typedef Deserializer<T> = T Function(dynamic);
+typedef Serializer<T> = dynamic Function(T);
+
+class QueryResult<T, V> {}
+class QueryRef<T, V> {
+  Future<QueryResult<T, V>> execute() async => QueryResult<T, V>();
+}
+class FirebaseDataConnect {
+  QueryRef<T, V> query<T, V>(String name, Deserializer<T> deserializer, Serializer<V> serializer, dynamic vars) {
+    return QueryRef<T, V>();
+  }
+}
+final Serializer<void> emptySerializer = (v) => null;
+
+T nativeFromJson<T>(dynamic input) => input as T;
+dynamic nativeToJson<T>(T input) => input;
 
 class ListUserReviewsVariablesBuilder {
-  
   final FirebaseDataConnect _dataConnect;
-  ListUserReviewsVariablesBuilder(this._dataConnect, );
-  Deserializer<ListUserReviewsData> dataDeserializer = (dynamic json)  => ListUserReviewsData.fromJson(jsonDecode(json));
-  
+  ListUserReviewsVariablesBuilder(this._dataConnect);
+  ListUserReviewsData dataDeserializer(dynamic json) => ListUserReviewsData.fromJson(jsonDecode(json));
+
   Future<QueryResult<ListUserReviewsData, void>> execute() {
     return ref().execute();
   }
 
   QueryRef<ListUserReviewsData, void> ref() {
-    
     return _dataConnect.query("ListUserReviews", dataDeserializer, emptySerializer, null);
   }
 }

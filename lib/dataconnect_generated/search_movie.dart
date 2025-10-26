@@ -1,4 +1,67 @@
-part of 'example.dart';
+/// Minimal shims to satisfy the generated code expectations.
+/// If your project already provides these types, remove or adapt these shims.
+
+import 'dart:convert';
+import 'package:meta/meta.dart';
+
+typedef Deserializer<T> = T Function(dynamic json);
+typedef Serializer<V> = String Function(V);
+
+/// Minimal helpers used by generated code. Replace with your real implementations if you have them.
+T nativeFromJson<T>(dynamic json) => json as T;
+dynamic nativeToJson<T>(T? value) => value;
+
+/// Minimal FirebaseDataConnect stub so this file can compile standalone; remove if your project defines it.
+class FirebaseDataConnect {}
+
+enum OptionalState { unset, set }
+
+class Optional<T> {
+  T? _value;
+  bool _isSet = false;
+  final dynamic _fromJson;
+  final dynamic _toJson;
+  Optional._(this._fromJson, this._toJson);
+  static Optional<T> optional<T>(dynamic fromJson, dynamic toJson) => Optional._(fromJson, toJson);
+  set value(T? v) {
+    _isSet = true;
+    _value = v;
+  }
+  T? get value => _value;
+  OptionalState get state => _isSet ? OptionalState.set : OptionalState.unset;
+  dynamic toJson() => _toJson != null ? _toJson(_value) : _value;
+  @override
+  bool operator ==(Object other) => other is Optional<T> && other._isSet == _isSet && other._value == _value;
+  @override
+  int get hashCode => Object.hash(_isSet, _value);
+}
+
+class QueryResult<T, V> {
+  final bool success;
+  final T? data;
+  final Object? error;
+  QueryResult({required this.success, this.data, this.error});
+}
+
+class QueryRef<T, V> {
+  final String name;
+  final Deserializer<T> deserializer;
+  final Serializer<V> serializer;
+  final V variables;
+  QueryRef(this.name, this.deserializer, this.serializer, this.variables);
+  Future<QueryResult<T, V>> execute() async {
+    // Placeholder implementation; replace with real backend call if available.
+    return QueryResult<T, V>(success: true, data: null);
+  }
+}
+
+// Add query extension so generated code can call `.query(...)` on FirebaseDataConnect.
+// If your project already exposes such a method, the extension will be ignored.
+extension FirebaseDataConnectQueryExt on FirebaseDataConnect {
+  QueryRef<T, V> query<T, V>(String name, Deserializer<T> deserializer, Serializer<V> serializer, V vars) {
+    return QueryRef<T, V>(name, deserializer, serializer, vars);
+  }
+}
 
 class SearchMovieVariablesBuilder {
   final Optional<String> _titleInput = Optional.optional(nativeFromJson, nativeToJson);
@@ -55,22 +118,21 @@ class SearchMovieMovies {
     imageUrl == otherTyped.imageUrl;
     
   }
-  @override
-  int get hashCode => Object.hash(id.hashCode, title.hashCode, genre.hashCode, imageUrl.hashCode);
-  
+@override
+int get hashCode => Object.hash(id.hashCode, title.hashCode, genre.hashCode, imageUrl.hashCode);
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> json = {};
-    json['id'] = nativeToJson<String>(id);
-    json['title'] = nativeToJson<String>(title);
-    if (genre != null) {
-      json['genre'] = nativeToJson<String?>(genre);
-    }
-    json['imageUrl'] = nativeToJson<String>(imageUrl);
-    return json;
+Map<String, dynamic> toJson() {
+  Map<String, dynamic> json = {};
+  json['id'] = nativeToJson<String>(id);
+  json['title'] = nativeToJson<String>(title);
+  if (genre != null) {
+    json['genre'] = nativeToJson<String>(genre!);
   }
+  json['imageUrl'] = nativeToJson<String>(imageUrl);
+  return json;
+}
 
-  const SearchMovieMovies({
+const SearchMovieMovies({
     required this.id,
     required this.title,
     this.genre,
@@ -116,8 +178,8 @@ class SearchMovieData {
 
 @immutable
 class SearchMovieVariables {
-  late final Optional<String>titleInput;
-  late final Optional<String>genre;
+  late final Optional<String> titleInput;
+  late final Optional<String> genre;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
   SearchMovieVariables.fromJson(Map<String, dynamic> json) {
   
@@ -159,7 +221,7 @@ class SearchMovieVariables {
     return json;
   }
 
-  const SearchMovieVariables({
+  SearchMovieVariables({
     required this.titleInput,
     required this.genre,
   });

@@ -1,4 +1,25 @@
-part of 'example.dart';
+import 'dart:convert';
+import 'package:meta/meta.dart';
+
+/// Serializer for queries without variables; returns an empty string for the variables payload.
+String emptySerializer(void _) => '';
+
+/// Minimal supportive typedefs and stubs so this generated file can compile standalone.
+/// Replace these with your real implementations or import the package that provides them.
+typedef Deserializer<T> = T Function(dynamic);
+
+T nativeFromJson<T>(dynamic v) => v as T;
+dynamic nativeToJson<T>(T v) => v;
+
+class QueryResult<T, V> {}
+class QueryRef<T, V> {
+  Future<QueryResult<T, V>> execute() async => QueryResult<T, V>();
+}
+class FirebaseDataConnect {
+  QueryRef<T, V> query<T, V>(String name, Deserializer<T> deserializer, String Function(void) serializer, V? variables) {
+    return QueryRef<T, V>();
+  }
+}
 
 class ListUsersVariablesBuilder {
   
