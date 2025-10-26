@@ -1,5 +1,4 @@
-part of 'example.dart';
-
+import 'dart:convert';
 import 'package:meta/meta.dart';
 
 typedef Deserializer<T> = T Function(dynamic);
@@ -159,4 +158,3 @@ class AddReviewVariables {
     required this.reviewText,
   });
 }
-

@@ -7,10 +7,10 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -20,6 +20,8 @@ class _LoginPageState extends State<LoginPage> {
       _emailController.text,
       _passwordController.text,
     );
+
+    if (!mounted) return;
 
     if (success) {
       Navigator.pushReplacement(

@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:gurukul_manager/months_screen.dart';
 import 'package:gurukul_manager/notice_service.dart';
 import 'package:gurukul_manager/practical_service.dart';
 import 'package:gurukul_manager/subject_service.dart';
@@ -10,15 +11,15 @@ class AttendanceDashboard extends StatefulWidget {
   const AttendanceDashboard({super.key});
 
   @override
-  _AttendanceDashboardState createState() => _AttendanceDashboardState();
+  AttendanceDashboardState createState() => AttendanceDashboardState();
 }
 
-class _AttendanceDashboardState extends State<AttendanceDashboard> {
+class AttendanceDashboardState extends State<AttendanceDashboard> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    PlaceholderWidget(text: 'Months'),
+    MonthsScreen(),
     SubjectsScreen(),
     TimetableScreen(),
     NoticeScreen(),
@@ -82,10 +83,10 @@ class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({super.key});
 
   @override
-  _AttendanceScreenState createState() => _AttendanceScreenState();
+  AttendanceScreenState createState() => AttendanceScreenState();
 }
 
-class _AttendanceScreenState extends State<AttendanceScreen> {
+class AttendanceScreenState extends State<AttendanceScreen> {
   final AttendanceManager _attendanceManager = AttendanceManager();
   List<Map<String, dynamic>> _attendanceRecords = [];
   bool _isLoading = true;
@@ -340,10 +341,10 @@ class SubjectsScreen extends StatefulWidget {
   const SubjectsScreen({super.key});
 
   @override
-  _SubjectsScreenState createState() => _SubjectsScreenState();
+  SubjectsScreenState createState() => SubjectsScreenState();
 }
 
-class _SubjectsScreenState extends State<SubjectsScreen> {
+class SubjectsScreenState extends State<SubjectsScreen> {
   final SubjectService _subjectService = SubjectService();
   List<String> _subjects = [];
 
@@ -390,10 +391,10 @@ class TimetableScreen extends StatefulWidget {
   const TimetableScreen({super.key});
 
   @override
-  _TimetableScreenState createState() => _TimetableScreenState();
+  TimetableScreenState createState() => TimetableScreenState();
 }
 
-class _TimetableScreenState extends State<TimetableScreen> {
+class TimetableScreenState extends State<TimetableScreen> {
   final TimetableService _timetableService = TimetableService();
   List<Map<String, dynamic>> _timetable = [];
 
@@ -440,10 +441,10 @@ class NoticeScreen extends StatefulWidget {
   const NoticeScreen({super.key});
 
   @override
-  _NoticeScreenState createState() => _NoticeScreenState();
+  NoticeScreenState createState() => NoticeScreenState();
 }
 
-class _NoticeScreenState extends State<NoticeScreen> {
+class NoticeScreenState extends State<NoticeScreen> {
   final NoticeService _noticeService = NoticeService();
   List<Map<String, dynamic>> _notices = [];
 
@@ -488,10 +489,10 @@ class PracticalScreen extends StatefulWidget {
   const PracticalScreen({super.key});
 
   @override
-  _PracticalScreenState createState() => _PracticalScreenState();
+  PracticalScreenState createState() => PracticalScreenState();
 }
 
-class _PracticalScreenState extends State<PracticalScreen> {
+class PracticalScreenState extends State<PracticalScreen> {
   final PracticalService _practicalService = PracticalService();
   List<Map<String, dynamic>> _practicals = [];
 

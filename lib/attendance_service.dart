@@ -95,7 +95,7 @@ class AttendanceManager {
   Future<void> submitAttendance(String studentId, String courseId) async {
     var connectivityResult = await Connectivity().checkConnectivity();
 
-    if (connectivityResult == ConnectivityResult.none) {
+    if (connectivityResult.contains(ConnectivityResult.none)) {
       // Offline - save locally
       await AttendanceDB.insertAttendance(studentId, courseId);
     } else {
@@ -129,7 +129,7 @@ class AttendanceManager {
 
   Future<List<Map<String, dynamic>>> getAttendance(String studentId) async {
     var connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) {
+    if (connectivityResult.contains(ConnectivityResult.none)) {
       // Optionally, you could fetch from local DB if offline
       return [];
     } else {

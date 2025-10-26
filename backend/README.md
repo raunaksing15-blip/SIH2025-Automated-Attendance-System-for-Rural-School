@@ -1,18 +1,37 @@
-# Backend Setup
+# Attendance Backend
 
-This folder contains the Flask backend for the attendance system.
+This is the backend for the Automated Attendance System, built with Flask.
 
-## Running the Backend
+## Setup
 
-1.  Navigate to the `backend` directory:
-    ```
-    cd backend
-    ```
-2.  Install the required packages:
-    ```
+1.  **Install dependencies:**
+
+    ```bash
     pip install -r requirements.txt
     ```
-3.  Run the Flask app:
+
+2.  **Create a `.env` file** and add the following:
+
     ```
+    FIREBASE_ADMIN_SDK_JSON=<path to your serviceAccountKey.json>
+    ```
+
+3.  **Run the server:**
+
+    ```bash
     python app.py
     ```
+
+## API Endpoints
+
+*   `POST /mark_attendance`
+
+    *   Marks attendance for a student.
+    *   **Request Body:** `{"student_id": "<student_id>", "course_id": "<course_id>"}`
+    *   **Response:** `{"success": true, "attendance_id": "<attendance_id>"}`
+
+*   `GET /get_attendance`
+
+    *   Retrieves attendance records for a student.
+    *   **Query Parameters:** `student_id=<student_id>`
+    *   **Response:** `{"success": true, "attendance": [...]}`

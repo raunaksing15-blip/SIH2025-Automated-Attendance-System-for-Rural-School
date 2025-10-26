@@ -1,4 +1,4 @@
-part of 'example.dart';
+import 'package:meta/meta.dart';
 
 /// Minimal helpers and stand-ins to satisfy generated code references.
 /// If your real project provides these types, remove or replace these
@@ -44,12 +44,6 @@ String jsonEncode(dynamic obj) => obj is String ? obj : obj.toString();
 // Native conversions used by the generator.
 T nativeFromJson<T>(dynamic v) => v as T;
 dynamic nativeToJson<T>(T v) => v;
-
-/// Simple @immutable stand-in (real code should import `package:meta/meta.dart`).
-class _Immutable {
-  const _Immutable();
-}
-const _Immutable immutable = _Immutable();
 
 class DeleteReviewVariablesBuilder {
   String movieId;
@@ -170,4 +164,3 @@ class DeleteReviewVariables {
     required this.movieId,
   });
 }
-

@@ -1,11 +1,69 @@
-part of 'example.dart';
+import 'dart:convert';
+import 'package:meta/meta.dart';
+
+typedef Deserializer<T> = T Function(dynamic);
+typedef Serializer<T> = String Function(T);
+
+class QueryResult<TData, TVars> {
+  final TData? data;
+  final TVars? vars;
+  QueryResult({this.data, this.vars});
+}
+
+class QueryRef<TData, TVars> {
+  final Future<QueryResult<TData, TVars>> Function() _execute;
+  QueryRef(this._execute);
+  Future<QueryResult<TData, TVars>> execute() => _execute();
+}
+
+class OperationResult<TData, TVars> {
+  final TData? data;
+  final TVars? vars;
+  OperationResult({this.data, this.vars});
+}
+
+class MutationRef<TData, TVars> {
+  final Future<OperationResult<TData, TVars>> Function() _execute;
+  MutationRef(this._execute);
+  Future<OperationResult<TData, TVars>> execute() => _execute();
+}
+
+class FirebaseDataConnect {
+  MutationRef<TData, TVars> mutation<TData, TVars>(
+    String name,
+    Deserializer<TData> dataDeserializer,
+    Serializer<TVars> varsSerializer,
+    TVars vars,
+  ) {
+    // Placeholder implementation; replace with real network/mutation logic.
+    return MutationRef<TData, TVars>(() async {
+      return OperationResult<TData, TVars>(data: null, vars: vars);
+    });
+  }
+
+  QueryRef<TData, TVars> query<TData, TVars>(
+    String name,
+    Deserializer<TData> dataDeserializer,
+    Serializer<TVars> varsSerializer,
+    TVars vars,
+  ) {
+    // Placeholder implementation; replace with real network/query logic.
+    return QueryRef<TData, TVars>(() async {
+      return QueryResult<TData, TVars>(data: null, vars: vars);
+    });
+  }
+}
+
+T nativeFromJson<T>(dynamic value) => value as T;
+dynamic nativeToJson<T>(T value) => value;
+String emptySerializer(dynamic v) => '';
 
 class GetMovieByIdVariablesBuilder {
   String id;
 
   final FirebaseDataConnect _dataConnect;
   GetMovieByIdVariablesBuilder(this._dataConnect, {required  this.id,});
-  Deserializer<GetMovieByIdData> dataDeserializer = (dynamic json)  => GetMovieByIdData.fromJson(jsonDecode(json));
+  Deserializer<GetMovieByIdData> dataDeserializer = (dynamic json)  => GetMovieByIdData.fromJson(json);
   Serializer<GetMovieByIdVariables> varsSerializer = (GetMovieByIdVariables vars) => jsonEncode(vars.toJson());
   Future<QueryResult<GetMovieByIdData, GetMovieByIdVariables>> execute() {
     return ref().execute();
@@ -294,4 +352,3 @@ class GetMovieByIdVariables {
     required this.id,
   });
 }
-

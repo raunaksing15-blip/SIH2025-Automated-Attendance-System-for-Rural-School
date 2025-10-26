@@ -1,5 +1,6 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -13,7 +14,7 @@ class AuthService {
       return true;
     } on FirebaseAuthException catch (e) {
       // You can add more specific error handling here
-      print(e.toString());
+      debugPrint(e.toString());
       return false;
     }
   }

@@ -1,6 +1,3 @@
-/// Minimal shims to satisfy the generated code expectations.
-/// If your project already provides these types, remove or adapt these shims.
-
 import 'dart:convert';
 import 'package:meta/meta.dart';
 
@@ -19,9 +16,9 @@ enum OptionalState { unset, set }
 class Optional<T> {
   T? _value;
   bool _isSet = false;
-  final dynamic _fromJson;
-  final dynamic _toJson;
-  Optional._(this._fromJson, this._toJson);
+  final dynamic fromJson;
+  final dynamic toJson;
+  Optional._(this.fromJson, this.toJson);
   static Optional<T> optional<T>(dynamic fromJson, dynamic toJson) => Optional._(fromJson, toJson);
   set value(T? v) {
     _isSet = true;
@@ -29,7 +26,7 @@ class Optional<T> {
   }
   T? get value => _value;
   OptionalState get state => _isSet ? OptionalState.set : OptionalState.unset;
-  dynamic toJson() => _toJson != null ? _toJson(_value) : _value;
+  dynamic toJsonResult() => toJson != null ? toJson(_value) : _value;
   @override
   bool operator ==(Object other) => other is Optional<T> && other._isSet == _isSet && other._value == _value;
   @override
@@ -78,7 +75,7 @@ class SearchMovieVariablesBuilder {
   }
 
   SearchMovieVariablesBuilder(this._dataConnect, );
-  Deserializer<SearchMovieData> dataDeserializer = (dynamic json)  => SearchMovieData.fromJson(jsonDecode(json));
+  Deserializer<SearchMovieData> dataDeserializer = (dynamic json)  => SearchMovieData.fromJson(json);
   Serializer<SearchMovieVariables> varsSerializer = (SearchMovieVariables vars) => jsonEncode(vars.toJson());
   Future<QueryResult<SearchMovieData, SearchMovieVariables>> execute() {
     return ref().execute();
@@ -178,20 +175,13 @@ class SearchMovieData {
 
 @immutable
 class SearchMovieVariables {
-  late final Optional<String> titleInput;
-  late final Optional<String> genre;
+  final Optional<String> titleInput;
+  final Optional<String> genre;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
-  SearchMovieVariables.fromJson(Map<String, dynamic> json) {
+  SearchMovieVariables.fromJson(Map<String, dynamic> json) :
+    titleInput = Optional.optional(nativeFromJson, nativeToJson)..value = json['titleInput'] == null ? null : nativeFromJson<String>(json['titleInput']),
+    genre = Optional.optional(nativeFromJson, nativeToJson)..value = json['genre'] == null ? null : nativeFromJson<String>(json['genre']);
   
-  
-    titleInput = Optional.optional(nativeFromJson, nativeToJson);
-    titleInput.value = json['titleInput'] == null ? null : nativeFromJson<String>(json['titleInput']);
-  
-  
-    genre = Optional.optional(nativeFromJson, nativeToJson);
-    genre.value = json['genre'] == null ? null : nativeFromJson<String>(json['genre']);
-  
-  }
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -213,17 +203,16 @@ class SearchMovieVariables {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     if(titleInput.state == OptionalState.set) {
-      json['titleInput'] = titleInput.toJson();
+      json['titleInput'] = titleInput.toJsonResult();
     }
     if(genre.state == OptionalState.set) {
-      json['genre'] = genre.toJson();
+      json['genre'] = genre.toJsonResult();
     }
     return json;
   }
 
-  SearchMovieVariables({
+  const SearchMovieVariables({
     required this.titleInput,
     required this.genre,
   });
 }
-

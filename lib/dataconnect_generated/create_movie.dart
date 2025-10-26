@@ -1,4 +1,5 @@
-part of 'example.dart';
+import 'dart:convert';
+import 'package:meta/meta.dart';
 
 typedef Deserializer<T> = T Function(dynamic);
 typedef Serializer<T> = String Function(T);
@@ -42,7 +43,7 @@ class CreateMovieVariablesBuilder {
   CreateMovieVariablesBuilder(this._dataConnect,
       {required this.title, required this.genre, required this.imageUrl});
   Deserializer<CreateMovieData> dataDeserializer =
-      (dynamic json) => CreateMovieData.fromJson(jsonDecode(json));
+      (dynamic json) => CreateMovieData.fromJson(json);
   Serializer<CreateMovieVariables> varsSerializer =
       (CreateMovieVariables vars) => jsonEncode(vars.toJson());
   Future<OperationResult<CreateMovieData, CreateMovieVariables>> execute() {
@@ -161,4 +162,3 @@ class CreateMovieVariables {
     required this.imageUrl,
   });
 }
-

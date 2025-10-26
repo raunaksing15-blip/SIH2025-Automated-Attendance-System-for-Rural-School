@@ -1,10 +1,67 @@
-part of 'example.dart';
+import 'package:meta/meta.dart';
+
+typedef Deserializer<T> = T Function(dynamic);
+typedef Serializer<T> = String Function(T);
+
+class QueryResult<TData, TVars> {
+  final TData? data;
+  final TVars? vars;
+  QueryResult({this.data, this.vars});
+}
+
+class QueryRef<TData, TVars> {
+  final Future<QueryResult<TData, TVars>> Function() _execute;
+  QueryRef(this._execute);
+  Future<QueryResult<TData, TVars>> execute() => _execute();
+}
+
+class OperationResult<TData, TVars> {
+  final TData? data;
+  final TVars? vars;
+  OperationResult({this.data, this.vars});
+}
+
+class MutationRef<TData, TVars> {
+  final Future<OperationResult<TData, TVars>> Function() _execute;
+  MutationRef(this._execute);
+  Future<OperationResult<TData, TVars>> execute() => _execute();
+}
+
+class FirebaseDataConnect {
+  MutationRef<TData, TVars> mutation<TData, TVars>(
+    String name,
+    Deserializer<TData> dataDeserializer,
+    Serializer<TVars> varsSerializer,
+    TVars vars,
+  ) {
+    // Placeholder implementation; replace with real network/mutation logic.
+    return MutationRef<TData, TVars>(() async {
+      return OperationResult<TData, TVars>(data: null, vars: vars);
+    });
+  }
+
+  QueryRef<TData, TVars> query<TData, TVars>(
+    String name,
+    Deserializer<TData> dataDeserializer,
+    Serializer<TVars> varsSerializer,
+    TVars vars,
+  ) {
+    // Placeholder implementation; replace with real network/query logic.
+    return QueryRef<TData, TVars>(() async {
+      return QueryResult<TData, TVars>(data: null, vars: vars);
+    });
+  }
+}
+
+T nativeFromJson<T>(dynamic value) => value as T;
+dynamic nativeToJson<T>(T value) => value;
+String emptySerializer(dynamic v) => '';
 
 class ListMoviesVariablesBuilder {
   
   final FirebaseDataConnect _dataConnect;
   ListMoviesVariablesBuilder(this._dataConnect, );
-  Deserializer<ListMoviesData> dataDeserializer = (dynamic json)  => ListMoviesData.fromJson(jsonDecode(json));
+  Deserializer<ListMoviesData> dataDeserializer = (dynamic json)  => ListMoviesData.fromJson(json);
   
   Future<QueryResult<ListMoviesData, void>> execute() {
     return ref().execute();
@@ -102,4 +159,3 @@ class ListMoviesData {
     required this.movies,
   });
 }
-
