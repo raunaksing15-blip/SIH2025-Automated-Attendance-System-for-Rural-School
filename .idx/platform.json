@@ -1,0 +1,9 @@
+{
+  "launchConfigs": [
+    {
+      "id": "run-backend",
+      "name": "Run Backend",
+      "target": "backend"
+    }
+  ]
+}

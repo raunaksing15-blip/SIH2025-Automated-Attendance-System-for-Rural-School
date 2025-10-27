@@ -3,15 +3,18 @@
   packages = [
     pkgs.jdk17
     pkgs.unzip
-    pkgs.python3
-    pkgs.python312Packages.flask
-    pkgs.python312Packages.flask-cors
-    pkgs.python312Packages.firebase-admin
-    pkgs.python312Packages.python-dotenv
+    (pkgs.python312.withPackages (ps: [
+      ps.flask
+      ps.flask-cors
+      ps.firebase-admin
+      ps.python-dotenv
+      ps.gunicorn
+      ps.qrcode
+      ps.pillow
+    ]))
+    pkgs.gcc
   ];
-  idx.extensions = [
-    
-  ];
+  idx.extensions = [];
   idx.previews = {
     previews = {
       web = {
@@ -39,6 +42,14 @@
           "localhost:5555"
         ];
         manager = "flutter";
+      };
+      backend = {
+        command = [
+          "python3"
+          "-u"
+          "backend/attendance_backend_firebase/app.py"
+        ];
+        manager = "web";
       };
     };
   };
