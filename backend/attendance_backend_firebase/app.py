@@ -7,6 +7,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
 import io
+import json
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,7 +17,25 @@ app = Flask(__name__)
 CORS(app)
 
 # Initialize Firebase
-cred = credentials.Certificate(os.getenv("FIREBASE_ADMIN_SDK_JSON"))
+# Get the credentials from the environment variable
+firebase_sdk_json_str = os.getenv("FIREBASE_ADMIN_SDK_JSON")
+
+if not firebase_sdk_json_str:
+    # If the environment variable is not set, the application cannot start.
+    raise ValueError("The FIREBASE_ADMIN_SDK_JSON environment variable is not set. Please set it with the content of your Firebase service account JSON file.")
+
+try:
+    # The environment variable contains the JSON content directly.
+    # Parse the JSON string into a dictionary.
+    firebase_sdk_json = json.loads(firebase_sdk_json_str)
+    cred = credentials.Certificate(firebase_sdk_json)
+except json.JSONDecodeError:
+    # If parsing fails, it might be a file path (for local development).
+    if os.path.isfile(firebase_sdk_json_str):
+        cred = credentials.Certificate(firebase_sdk_json_str)
+    else:
+        raise ValueError("Failed to initialize Firebase. The FIREBASE_ADMIN_SDK_JSON is not a valid JSON string or a valid file path.")
+
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
