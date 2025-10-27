@@ -2,6 +2,5 @@ services:
   - type: web
     name: gurukul-manager-backend
     env: python
-    workingDir: ./backend
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn app:app"
+    buildCommand: "python3 -m venv backend/attendance_backend_firebase/venv && ./backend/attendance_backend_firebase/venv/bin/pip install -r backend/attendance_backend_firebase/requirements.txt"
+    startCommand: "./backend/attendance_backend_firebase/venv/bin/gunicorn --workers 4 --bind 0.0.0.0:$PORT backend.attendance_backend_firebase.app:app"
