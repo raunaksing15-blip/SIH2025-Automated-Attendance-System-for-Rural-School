@@ -2,6 +2,9 @@ services:
   - type: web
     name: gurukul-manager-backend
     env: python
-    buildCommand: "pythopython3 -m venv backend/attendance_backend_firebase/venv && ./backend/attendance_backend_firebase/venv/bin/pip install -r backend/attendance_backend_firebase/requirements.txt
-n3 -m venv backend/attendance_backend_firebase/venv && ./backend/attendance_backend_firebase/venv/bin/pip install -r backend/attendance_backend_firebase/requirements.txt"
-    startCommand: "./backend/attendance_backend_firebase/venv/bin/gunicorn --workers 4 --bind 0.0.0.0:$PORT backend.attendance_backend_firebase.app:app"
+    buildCommand: pip install -r backend/attendance_backend_firebase/requirements.txt
+    startCommand: gunicorn app:app -b 0.0.0.0:10000
+    workingDirectory: backend/attendance_backend_firebase
+    envVars:
+      - key: FIREBASE_ADMIN_SDK_JSON
+        value: serviceAccountKey.json
