@@ -39,6 +39,20 @@ except json.JSONDecodeError:
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+# Root route - provides a welcome message and API endpoint information
+@app.route('/')
+def api_info():
+    """
+    Provides information about the API endpoints.
+    """
+    return jsonify({
+        "message": "Welcome to the Automated Attendance System Backend API",
+        "endpoints": {
+            "/generate_qr": "GET - Generates a QR code for a given course ID.",
+            "/mark_attendance": "POST - Marks attendance for a student.",
+            "/get_attendance": "GET - Retrieves attendance records for a student."
+        }
+    })
 @app.route('/generate_qr', methods=['GET'])
 def generate_qr():
     """
