@@ -1,63 +1,76 @@
-
 import os
+import io
+import json
 import qrcode
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
+from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials, firestore
-from dotenv import load_dotenv
-import io
-import json
 
-# Load environment variables from .env file
+# ==============================================
+# 🔹 1. Load environment variables
+# ==============================================
 load_dotenv()
 
-# Initialize Flask app
+# ==============================================
+# 🔹 2. Initialize Flask app
+# ==============================================
 app = Flask(__name__)
 CORS(app)
 
-# Initialize Firebase
-# Get the credentials from the environment variable
+# ==============================================
+# 🔹 3. Initialize Firebase Admin SDK
+# ==============================================
 firebase_sdk_json_str = os.getenv("FIREBASE_ADMIN_SDK_JSON")
 
 if not firebase_sdk_json_str:
-    # If the environment variable is not set, the application cannot start.
-    raise ValueError("The FIREBASE_ADMIN_SDK_JSON environment variable is not set. Please set it with the content of your Firebase service account JSON file.")
+    raise ValueError("❌ The FIREBASE_ADMIN_SDK_JSON environment variable is not set. Please check your .env file.")
 
 try:
-    # The environment variable contains the JSON content directly.
-    # Parse the JSON string into a dictionary.
+    # Parse the JSON string from environment variable
     firebase_sdk_json = json.loads(firebase_sdk_json_str)
     cred = credentials.Certificate(firebase_sdk_json)
 except json.JSONDecodeError:
-    # If parsing fails, it might be a file path (for local development).
+    # If parsing fails, check if it's a file path
     if os.path.isfile(firebase_sdk_json_str):
         cred = credentials.Certificate(firebase_sdk_json_str)
     else:
-        raise ValueError("Failed to initialize Firebase. The FIREBASE_ADMIN_SDK_JSON is not a valid JSON string or a valid file path.")
+        raise ValueError("❌ FIREBASE_ADMIN_SDK_JSON is not valid JSON or file path.")
 
-firebase_admin.initialize_app(cred)
+# Initialize Firebase App
+try:
+    firebase_admin.get_app()
+except ValueError:
+    firebase_admin.initialize_app(cred)
+
 db = firestore.client()
 
-# Root route - provides a welcome message and API endpoint information
+print("✅ Firebase Admin SDK initialized successfully!")
+
+# ==============================================
+# 🔹 4. API Routes
+# ==============================================
+
 @app.route('/')
 def api_info():
     """
-    Provides information about the API endpoints.
+    API information route
     """
     return jsonify({
-        "message": "Welcome to the Automated Attendance System Backend API",
+        "message": "Welcome to Gurukul Manager Backend API 🚀",
         "endpoints": {
             "/generate_qr": "GET - Generates a QR code for a given course ID.",
             "/mark_attendance": "POST - Marks attendance for a student.",
             "/get_attendance": "GET - Retrieves attendance records for a student."
         }
-    })
+    }), 200
+
+
 @app.route('/generate_qr', methods=['GET'])
 def generate_qr():
     """
     Generates a QR code for a given course ID.
-    Expects 'course_id' as a query parameter.
     """
     try:
         course_id = request.args.get('course_id')
@@ -76,7 +89,7 @@ def generate_qr():
 
         img = qr.make_image(fill_color="black", back_color="white")
 
-        # Save the image to a in-memory file
+        # Save to in-memory buffer
         img_io = io.BytesIO()
         img.save(img_io, 'PNG')
         img_io.seek(0)
@@ -87,18 +100,20 @@ def generate_qr():
         app.logger.error(f"Error generating QR code: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
+
 @app.route('/mark_attendance', methods=['POST'])
 def mark_attendance():
     """
     Marks attendance for a student.
-    Expects a JSON payload with 'student_id' and 'course_id'.
     """
     try:
         data = request.get_json()
-        student_id = data['student_id']
-        course_id = data['course_id']
+        student_id = data.get('student_id')
+        course_id = data.get('course_id')
 
-        # Create a new attendance record
+        if not student_id or not course_id:
+            return jsonify({"success": False, "error": "Both student_id and course_id are required"}), 400
+
         attendance_ref, _ = db.collection('attendance').add({
             'student_id': student_id,
             'course_id': course_id,
@@ -106,15 +121,16 @@ def mark_attendance():
         })
 
         return jsonify({"success": True, "attendance_id": attendance_ref.id}), 201
+
     except Exception as e:
         app.logger.error(f"Error marking attendance: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
+
 
 @app.route('/get_attendance', methods=['GET'])
 def get_attendance():
     """
     Retrieves attendance records for a student.
-    Expects 'student_id' as a query parameter.
     """
     try:
         student_id = request.args.get('student_id')
@@ -125,9 +141,14 @@ def get_attendance():
         attendance_records = [record.to_dict() for record in attendance_query]
 
         return jsonify({"success": True, "attendance": attendance_records}), 200
+
     except Exception as e:
         app.logger.error(f"Error getting attendance: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
+
+# ==============================================
+# 🔹 5. Main Entry Point
+# ==============================================
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
