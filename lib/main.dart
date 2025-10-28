@@ -1,8 +1,17 @@
 
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart'; // Import Firebase Core
 import 'package:gurukul_manager/login_page.dart';
 
-void main() {
+// Make main() async
+void main() async {
+  // Ensure that Flutter bindings are initialized before calling Firebase.initializeApp
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Wait for Firebase to initialize
+  await Firebase.initializeApp(); 
+  
+  // Now that Firebase is initialized, run the app
   runApp(const AttendanceApp());
 }
 
