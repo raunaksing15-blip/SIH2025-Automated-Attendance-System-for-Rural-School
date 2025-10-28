@@ -39,6 +39,11 @@ except json.JSONDecodeError:
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+@app.route('/', methods=['GET'])
+def hello_world():
+    """Simple route for the root path."""
+    return jsonify({"message": "Hello, World!"})
+
 @app.route('/generate_qr', methods=['GET'])
 def generate_qr():
     """
