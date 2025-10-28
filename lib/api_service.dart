@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String _baseUrl = 'http://127.0.0.1:8080'; // Replace with your backend URL
+  final String _baseUrl = 'https://sih2025-automated-attendance-system-for-33fd.onrender.com'; // Replace with your backend URL
 
   Future<Uint8List> getQrCode(String courseId) async {
     final response = await http.get(Uri.parse('$_baseUrl/generate_qr?course_id=$courseId'));
