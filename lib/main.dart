@@ -1,17 +1,17 @@
 
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart'; // Import Firebase Core
+import 'package:firebase_core/firebase_core.dart';
+import 'package:gurukul_manager/firebase_options.dart'; // Import the firebase_options.dart file
 import 'package:gurukul_manager/login_page.dart';
 
-// Make main() async
 void main() async {
-  // Ensure that Flutter bindings are initialized before calling Firebase.initializeApp
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Wait for Firebase to initialize
-  await Firebase.initializeApp(); 
+  // Initialize Firebase with the default options for the current platform.
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   
-  // Now that Firebase is initialized, run the app
   runApp(const AttendanceApp());
 }
 
